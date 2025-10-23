@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoverGo Business Flow Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (BG: gray-100, Content: white, Accent: indigo-600) -->
+    <!-- Application Structure Plan: A top-level tabbed navigation for the 3 main modules (Insured, Policies, Broker). Selecting a module reveals a 2-column layout: a left-hand sidebar for sub-navigation (listing the flows for that module) and a right-hand content panel to display the selected flow's details (description and steps). This master-detail structure is optimal for presenting hierarchical documentation, allowing users to easily scan all flows in a section and deep-dive into any specific one without leaving the page. -->
+    <!-- Visualization & Content Choices: The source report is 100% textual process documentation. Goal: Organize/Inform. Presentation Method: All content is presented using structured, dynamic HTML (H2/H3/p/ol/ul). Interaction: Vanilla JS toggles the visibility of content sections based on user clicks on the main nav tabs and sidebar links. Justification: This provides the cleanest, most intuitive interactive experience for navigating text-heavy documentation. No data charts are needed. No SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .flow-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">CoverGo Platform: Business Flow Explorer</h1>
+            <p class="text-lg text-gray-600 mt-2">An interactive guide to the platform's core processes.</p>
+        </header>
+
+        <!-- Main Module Navigation -->
+        <nav class="flex justify-center space-x-2 md:space-x-4 mb-8" id="main-nav">
+            <button data-module="insured" class="nav-button active-nav py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white shadow-md">Insured (Members)</button>
+            <button data-module="policies" class="nav-button py-2 px-4 rounded-lg font-semibold bg-white text-gray-700 hover:bg-indigo-50 shadow-sm">Policies</button>
+            <button data-module="broker" class="nav-button py-2 px-4 rounded-lg font-semibold bg-white text-gray-700 hover:bg-indigo-50 shadow-sm">Broker Portal</button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="content-area">
+
+            <!-- Insured Module Content (default visible) -->
+            <div id="module-insured" class="module-content">
+                <p class="text-center text-gray-700 mb-6 md:text-lg">This section details the flows for managing insured members, from their personal profiles and permissions to their claims and coverage.</p>
+                <div class="md:flex md:space-x-6">
+                    <!-- Sidebar -->
+                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
+                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="insured">
+                            <li data-flow="insured-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Member Profile Management</li>
+                            <li data-flow="insured-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Permission & Access Management</li>
+                            <li data-flow="insured-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Claim & GOP Management (Admin)</li>
+                            <li data-flow="insured-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Coverage Management</li>
+                        </ul>
+                    </aside>
+                    <!-- Flow Detail Panel -->
+                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
+                        <div id="flow-insured-1" class="flow-content">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Member Profile Management</h2>
+                            <p class="text-gray-600 mb-6">Covers viewing and updating an insured member's core information, employment details, and dependent relationships.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Navigate to the <strong>Members</strong> module.</li>
+                                <li>Search for a member using their unique number, name, email ID, or company name.</li>
+                                <li>Click the member's ID link to access their profile.</li>
+                                <li>The <strong>Member Details tab</strong> is displayed by default.</li>
+                                <li><strong>To Edit Personal Information:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Click the <strong>Edit</strong> button in the <strong>Member Details</strong> section.</li>
+                                        <li>Modify necessary information (e.g., bank account, contact number).</li>
+                                        <li>Click <strong>Submit</strong> to save changes.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Edit Employment:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Click the <strong>Edit</strong> button in the <strong>Employment</strong> section.</li>
+                                        <li>Update the <strong>Company Name</strong> or <strong>Member Type</strong>.</li>
+                                        <li>Click <strong>Submit</strong>.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To View Dependents:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Scroll to the <strong>Relationships</strong> section to see dependents and their status (Active/Inactive).</li>
+                                        <li>Click a dependent's name to view their profile.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        <div id="flow-insured-2" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Member Permission and Access Management</h2>
+                            <p class="text-gray-600 mb-6">Describes managing a member's system roles and resetting their Member Portal password.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
+                                <li><strong>To Manage Roles:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>In the <strong>Member Details tab</strong>, click <strong>Edit</strong> in the <strong>Permission Group</strong> section.</li>
+                                        <li>To add a role, click <strong>Add Role</strong>, select the permission group (e.g., HR Manager), click <strong>Add</strong>, and then <strong>Save</strong>.</li>
+                                        <li>To remove a role, click the <strong>X icon</strong> next to the role and click <strong>Confirm Remove</strong>.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Reset a Member's Password:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>On the member's profile, scroll down and click the <strong>Reset Password</strong> button.</li>
+                                        <li>Click <strong>Reset Member Password</strong> to send a reset link for the Member Portal to the member's email.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        <div id="flow-insured-3" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Member Claim and GOP Management (Admin View)</h2>
+                            <p class="text-gray-600 mb-6">Details how an administrator views, filters, and creates new claims or Guarantees of Payment (GOP) for a member within their profile.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
+                                <li>Click the <strong>Claims</strong> tab to see a summary of member claims and statuses.</li>
+                                <li><strong>To Find a Claim:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li><strong>Search:</strong> Type the unique claim ID in the search box.</li>
+                                        <li><strong>Filter:</strong> Click the <strong>filter icon</strong> and apply filters (status, approver, handler, type).</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Create a New Claim (e.g., from paper submission):</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>From the <strong>Claims</strong> tab, click <strong>Create New Claims</strong> and select the product type (e.g., Group Medical).</li>
+                                        <li>Verify information and click <strong>Submit</strong>. The claim is created.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Create a New GOP:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Navigate to the <strong>GOP</strong> section/tab within the member's profile.</li>
+                                        <li>Initiate the GOP creation process, often used when requested via phone or email.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        <div id="flow-insured-4" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Member Coverage Management</h2>
+                            <p class="text-gray-600 mb-6">Describes reviewing an insured member's specific policy coverage, benefits, and making plan changes.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
+                                <li>Navigate to the <strong>Plans & Benefits</strong> tab.</li>
+                                <li>Review detailed coverage information for each available policy, including benefits provided and remaining benefits.</li>
+                                <li>Initiate actions such as changing the member's plan or terminating their coverage.</li>
+                                <li>Optionally, download a comprehensive member-specific information report.</li>
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Policies Module Content (hidden) -->
+            <div id="module-policies" class="module-content hidden">
+                <p class="text-center text-gray-700 mb-6 md:text-lg">Explore the business flows for end-to-end policy administration, including financial reviews, member endorsements, and policy-level changes.</p>
+                <div class="md:flex md:space-x-6">
+                    <!-- Sidebar -->
+                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
+                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="policies">
+                            <li data-flow="policies-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Policy Information & Financial Review</li>
+                            <li data-flow="policies-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Member Movement)</li>
+                            <li data-flow="policies-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Policy-Level)</li>
+                            <li data-flow="policies-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy-Specific Member Inquiry</li>
+                        </ul>
+                    </aside>
+                    <!-- Flow Detail Panel -->
+                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
+                        <div id="flow-policies-1" class="flow-content">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Policy Information and Financial Review</h2>
+                            <p class="text-gray-600 mb-6">Covers searching for policies, reviewing comprehensive details, and managing financial records like debit notes and payments.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Navigate to the <strong>Policies Module</strong>.</li>
+                                <li>Use search filters to find and select a specific policy.</li>
+                                <li>Access the policy's comprehensive information via tabs like <strong>Overview</strong>, <strong>Insureds</strong>, <strong>Transactions</strong>, <strong>Billing & Collection</strong>, <strong>Endorsements</strong>, <strong>Logs</strong>, and <strong>Member Movement</strong>.</li>
+                                <li>Navigate to <strong>Billing & Collection</strong> or <strong>Transactions</strong> to review financial records.</li>
+                                <li>Use the "Issue debit notes" function to create and deliver debit notes to the policyholder.</li>
+                                <li>Manually log payment transactions using the "Log payment transactions" function, noting automation is possible with integration.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-policies-2" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Policy Endorsement (Member Movement)</h2>
+                            <p class="text-gray-600 mb-6">Manages changes to the insured members covered under a policy, including additions, terminations, reinstatements, and information updates.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
+                                <li>Navigate to the <strong>Member Movement</strong> section.</li>
+                                <li>Optionally, filter movements by status (ongoing or completed).</li>
+                                <li>Select the desired member movement action:
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li><strong>Member Addition:</strong> Add members manually or via bulk upload.</li>
+                                        <li><strong>Terminate Membership:</strong> End coverage for specific members.</li>
+                                        <li><strong>Reinstate Member:</strong> Reactivate previously terminated members.</li>
+                                        <li><strong>Modify Coverage:</strong> Change coverage details for members.</li>
+                                        <li><strong>Update Information:</strong> Update member personal/contact details.</li>
+                                    </ul>
+                                </li>
+                                <li>Optionally, export the <strong>Member Movement report</strong>.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-policies-3" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Policy Endorsement (Policy-Level Changes)</h2>
+                            <p class="text-gray-600 mb-6">Covers initiating and tracking structural changes (endorsements) to the policy itself.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
+                                <li>Navigate to the <strong>Endorsements</strong> tab.</li>
+                                <li>Review the history of existing policy endorsements.</li>
+                                <li>Select <strong>Initiate new endorsements</strong>.</li>
+                                <li>Choose the type of change: adding a plan, updating terms/conditions, modifying policyholder details, or extending/terminating the policy period.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-policies-4" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Policy-Specific Member Inquiry</h2>
+                            <p class="text-gray-600 mb-6">Details looking up a specific member within a policy to review their policy-related information.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
+                                <li>Navigate to the <strong>Insureds</strong> tab.</li>
+                                <li>Use search filters to find the specific member.</li>
+                                <li>Click the member to access their policy-related information.</li>
+                                <li>Review details across tabs: Member Details, Plans & Benefits, Claims, GOP, and Transactions.</li>
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Broker Module Content (hidden) -->
+            <div id="module-broker" class="module-content hidden">
+                <p class="text-center text-gray-700 mb-6 md:text-lg">This module covers all activities for Agents and Team Managers, from proposal management and team monitoring to agent lifecycle and access control.</p>
+                <div class="md:flex md:space-x-6">
+                    <!-- Sidebar -->
+                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
+                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="broker">
+                            <li data-flow="broker-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Agent Case (Proposal) Management</li>
+                            <li data-flow="broker-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Policy Management</li>
+                            <li data-flow="broker-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Client Management</li>
+                            <li data-flow="broker-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Profile Management</li>
+                            <li data-flow="broker-5" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Team Performance Monitoring (Manager)</li>
+                            <li data-flow="broker-6" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Team Structure Management (Manager)</li>
+                            <li data-flow="broker-7" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Lifecycle Management (Manager)</li>
+                            <li data-flow="broker-8" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Deactivation (Manager)</li>
+                            <li data-flow="broker-9" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Role Administration (Admin Task)</li>
+                        </ul>
+                    </aside>
+                    <!-- Flow Detail Panel -->
+                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
+                        <div id="flow-broker-1" class="flow-content">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Agent Case (Proposal) Management</h2>
+                            <p class="text-gray-600 mb-6">Standard process for an agent (or Team Manager acting as one) to create and manage their own sales proposals.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in to the Broker Portal.</li>
+                                <li>Navigate to the <strong>Cases</strong> menu.</li>
+                                <li>Click <strong>Create Case</strong> to start a new proposal.</li>
+                                <li>View personal cases under the <strong>My Cases</strong> tab.</li>
+                                <li>Access a specific case to manage it, including actions like accepting/rejecting offers.</li>
+                                <li>Create and view tasks related to personal cases.</li>
+                                <li>View notifications related to personal cases.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-2" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Agent Policy Management</h2>
+                            <p class="text-gray-600 mb-6">How an agent (or Team Manager) views policies they handle.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in to the Broker Portal.</li>
+                                <li>Navigate to the <strong>Policies</strong> menu.</li>
+                                <li>View personal policies under the <strong>My Policies</strong> tab.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-3" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Agent Client Management</h2>
+                            <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their client records.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in to the Broker Portal.</li>
+                                <li>Navigate to the <strong>Clients</strong> menu.</li>
+                                <li>Create new client records.</li>
+                                <li>View existing clients managed by the agent.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-4" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Agent Profile Management</h2>
+                            <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their profile and password.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in to the Broker Portal.</li>
+                                <li>Access the user profile section.</li>
+                                <li>View personal profile details.</li>
+                                <li>Change personal password.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-5" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">5. Team Performance Monitoring (Team Manager)</h2>
+                            <p class="text-gray-600 mb-6">Enables Team Managers to oversee cases (proposals) and policies handled by their team members.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in to the Broker Portal as a Team Manager.</li>
+                                <li><strong>To Monitor Cases:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Navigate to the <strong>Cases</strong> menu.</li>
+                                        <li>Click the <strong>My Team's Cases</strong> tab to view team/sub-team cases.</li>
+                                        <li>Use <strong>Filter By Member</strong> or <strong>Filter by Team</strong>.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Monitor Policies:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Navigate to the <strong>Policies</strong> menu.</li>
+                                        <li>Click the <strong>My Team's Policies</strong> tab to view team/sub-team policies.</li>
+                                        <li>Use <strong>Filter By Member</strong> or <strong>Filter by Team</strong>.</li>
+                                    </ul>
+                                </li>
+                                <li><em>Note: Sub-Team Managers only see their direct sub-team's data.</em></li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-6" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">6. Team Structure Management (Team Manager)</h2>
+                            <p class="text-gray-600 mb-6">Allows Team Managers to add sub-teams and rename teams they manage.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
+                                <li><strong>To Add a Sub-Team:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Hover over the parent team name; click the <strong>+</strong> icon.</li>
+                                        <li>Type the new sub-team name and press <strong>Enter</strong>. Name must be unique.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Update a Team Name:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Hover over the team name; click the <strong>Pen</strong> icon.</li>
+                                        <li>Edit the name.</li>
+                                        <li>Click the <strong>check mark</strong> icon to save. Name must be unique.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-7" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">7. Agent Lifecycle Management (Team Manager)</h2>
+                            <p class="text-gray-600 mb-6">Covers Team Manager actions: viewing, adding, editing, and re-assigning agents within their team structure.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
+                                <li><strong>To View Agent Details:</strong> Click the <strong>Agent ID</strong> link. Bank details are hidden.</li>
+                                <li><strong>To Add a New Agent:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Click <strong>Add Agent</strong>.</li>
+                                        <li>Fill the form; Distributor is pre-set. Select team/sub-team from the limited dropdown.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Edit Agent Details:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>Click <strong>Edit</strong> next to the agent's record.</li>
+                                        <li>Modify details and save.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>To Re-assign Agent:</strong>
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li>While editing an agent, use the <strong>Team</strong> dropdown to select a new team/sub-team within the manager's hierarchy.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-8" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">8. Agent Deactivation (Team Manager)</h2>
+                            <p class="text-gray-600 mb-6">Allows a Team Manager to terminate an agent's Broker Portal access.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
+                                <li>Find the agent, click the <strong>[...]</strong> menu, select <strong>Terminate Agent</strong>.</li>
+                                <li>Choose timing:
+                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
+                                        <li><strong>Immediate:</strong> Select <strong>Terminate agent immediately</strong> and confirm. Status becomes <strong>Inactive</strong>.</li>
+                                        <li><strong>Future Date:</strong> Select <strong>Terminate agent at a future date</strong>, pick a valid future date, and confirm. Agent remains <strong>Active</strong> but marked until the date, then becomes <strong>Inactive</strong>.</li>
+                                    </ul>
+                                </li>
+                                <li>Status is indicated visually (e.g., bullets).</li>
+                                <li>A future date can be updated before it arrives.</li>
+                                <li>Deactivated agents cannot log in or reset passwords.</li>
+                            </ol>
+                        </div>
+                        <div id="flow-broker-9" class="flow-content hidden">
+                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">9. Team Manager Role Administration (Admin Portal Task)</h2>
+                            <p class="text-gray-600 mb-6">Admin Portal users grant or revoke Team Manager privileges, impacting Broker Portal view. <em>Performed outside the Broker Portal</em>.</p>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
+                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
+                                <li>An Admin Portal user navigates to the agent's profile.</li>
+                                <li><strong>To Grant:</strong> Assign the Team Manager role (process implied).</li>
+                                <li><strong>To Revoke:</strong> Click <strong>Unset Manager</strong>.</li>
+                                <li>Broker Portal view changes on the agent's next login, losing team tabs if revoked.</li>
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainNav = document.getElementById('main-nav');
+            const contentArea = document.getElementById('content-area');
+            const navButtons = mainNav.querySelectorAll('.nav-button');
+            const moduleContents = contentArea.querySelectorAll('.module-content');
+            const sidebarNavs = contentArea.querySelectorAll('.sidebar-nav');
+
+            const activeNavClass = 'bg-indigo-600 text-white shadow-md';
+            const inactiveNavClass = 'bg-white text-gray-700 hover:bg-indigo-50 shadow-sm';
+            const activeLinkClass = 'bg-indigo-100 text-indigo-700 font-semibold';
+            const inactiveLinkClass = 'text-gray-700 hover:bg-gray-100';
+
+            // Function to show a module
+            function showModule(moduleId) {
+                moduleContents.forEach(module => {
+                    module.classList.add('hidden');
+                });
+                const activeModule = document.getElementById(`module-${moduleId}`);
+                if (activeModule) {
+                    activeModule.classList.remove('hidden');
+                }
+
+                navButtons.forEach(button => {
+                    if (button.dataset.module === moduleId) {
+                        button.classList.add(...activeNavClass.split(' '));
+                        button.classList.remove(...inactiveNavClass.split(' '));
+                    } else {
+                        button.classList.add(...inactiveNavClass.split(' '));
+                        button.classList.remove(...activeNavClass.split(' '));
+                    }
+                });
+
+                // Activate the first flow in the new module
+                const firstSidebarLink = activeModule.querySelector('.sidebar-link');
+                if (firstSidebarLink) {
+                    showFlow(moduleId, firstSidebarLink.dataset.flow, firstSidebarLink);
+                }
+            }
+
+            // Function to show a specific flow
+            function showFlow(moduleId, flowId, clickedLink) {
+                const moduleContainer = document.getElementById(`module-${moduleId}`);
+                if (!moduleContainer) return;
+
+                moduleContainer.querySelectorAll('.flow-content').forEach(flow => {
+                    flow.classList.add('hidden');
+                });
+                
+                const activeFlow = document.getElementById(flowId);
+                if (activeFlow) {
+                    activeFlow.classList.remove('hidden');
+                }
+
+                moduleContainer.querySelectorAll('.sidebar-link').forEach(link => {
+                    link.classList.remove(...activeLinkClass.split(' '));
+                    link.classList.add(...inactiveLinkClass.split(' '));
+                });
+
+                if (clickedLink) {
+                    clickedLink.classList.add(...activeLinkClass.split(' '));
+                    clickedLink.classList.remove(...inactiveLinkClass.split(' '));
+                }
+            }
+
+            // Attach event listener to main nav
+            mainNav.addEventListener('click', (e) => {
+                if (e.target.classList.contains('nav-button')) {
+                    const moduleId = e.target.dataset.module;
+                    showModule(moduleId);
+                }
+            });
+
+            // Attach event listeners to all sidebars
+            sidebarNavs.forEach(sidebar => {
+                sidebar.addEventListener('click', (e) => {
+                    const clickedLink = e.target.closest('.sidebar-link');
+                    if (clickedLink) {
+                        const moduleId = sidebar.dataset.moduleId;
+                        const flowId = clickedLink.dataset.flow;
+                        showFlow(moduleId, flowId, clickedLink);
+                    }
+                });
+            });
+
+            // Initial state (show default module and flow)
+            // This is handled by default classes in HTML
+        });
+    </script>
+
+</body>
+</html>
