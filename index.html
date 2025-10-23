@@ -159,7 +159,7 @@
                     <!-- Sidebar -->
                     <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
                         <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="policies">
-                            {/* <!-- NOTE: The first item should NOT have active-link initially for non-default modules --> */}
+                            <!-- Removed invalid comment -->
                             <li data-flow="policies-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Information & Financial Review</li>
                             <li data-flow="policies-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Member Movement)</li>
                             <li data-flow="policies-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Policy-Level)</li>
@@ -168,7 +168,7 @@
                     </aside>
                     <!-- Flow Detail Panel -->
                     <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        {/* <!-- Content divs will be shown/hidden by JS --> */}
+                        <!-- Removed invalid comment -->
                         <div id="flow-policies-1" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Policy Information and Financial Review</h2>
                             <p class="text-gray-600 mb-6">Covers searching for policies, reviewing comprehensive details, and managing financial records like debit notes and payments.</p>
@@ -237,7 +237,7 @@
                     <!-- Sidebar -->
                     <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
                         <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="broker">
-                             {/* <!-- NOTE: The first item should NOT have active-link initially for non-default modules --> */}
+                             <!-- Removed invalid comment -->
                             <li data-flow="broker-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Case (Proposal) Management</li>
                             <li data-flow="broker-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Policy Management</li>
                             <li data-flow="broker-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Client Management</li>
@@ -251,7 +251,7 @@
                     </aside>
                     <!-- Flow Detail Panel -->
                     <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        {/* <!-- Content divs will be shown/hidden by JS --> */}
+                        <!-- Removed invalid comment -->
                         <div id="flow-broker-1" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Agent Case (Proposal) Management</h2>
                             <p class="text-gray-600 mb-6">Standard process for an agent (or Team Manager acting as one) to create and manage their own sales proposals.</p>
@@ -427,7 +427,7 @@
             const inactiveNavClass = ['bg-white', 'text-gray-700', 'hover:bg-indigo-50', 'shadow-sm'];
             const activeLinkClass = ['bg-indigo-100', 'text-indigo-700', 'font-semibold'];
             const inactiveLinkClass = ['text-gray-700', 'hover:bg-gray-100'];
-            // Removed initialActiveLinkClass as we will set it dynamically
+
 
             function showModule(moduleId) {
                 console.log(`Showing module: ${moduleId}`);
@@ -454,23 +454,55 @@
                     }
                 });
 
-                // --- Select the correct sidebar and first link within the *active* module ---
+                // Get the specific sidebar for *this* module
                 const moduleSidebar = activeModule.querySelector('.sidebar-nav');
-                const firstSidebarLink = moduleSidebar ? moduleSidebar.querySelector('.sidebar-link') : null;
+                if (!moduleSidebar) {
+                     console.error(`Sidebar .sidebar-nav not found within the now active module '${moduleId}'.`);
+                     return; // Cannot proceed without sidebar
+                }
 
-                if (firstSidebarLink && firstSidebarLink.dataset.flow) {
-                    // Call showFlow for the FIRST link of THIS module
-                    showFlow(moduleId, firstSidebarLink.dataset.flow, firstSidebarLink);
+                // --- Reset all links in THIS sidebar to inactive ---
+                moduleSidebar.querySelectorAll('.sidebar-link').forEach(link => {
+                    link.classList.remove(...activeLinkClass);
+                    link.classList.add(...inactiveLinkClass);
+                });
+
+
+                // Find the first link in THIS sidebar
+                const firstSidebarLink = moduleSidebar.querySelector('.sidebar-link');
+                const section = activeModule.querySelector('section'); // Find the content section
+
+                // --- Hide all flow contents in THIS section ---
+                if (section) {
+                    section.querySelectorAll('div[id^="flow-"]').forEach(flow => {
+                        flow.classList.add('hidden');
+                    });
+                     // Remove placeholder if it exists from previous state
+                    const placeholder = section.querySelector('#temp-placeholder');
+                    if (placeholder) placeholder.remove();
                 } else {
-                    console.warn(`No sidebar links found or first link has no data-flow in module '${moduleId}'`);
-                    const section = activeModule.querySelector('section');
-                    if (section) {
-                         // Clear previous content or show placeholder
-                         section.querySelectorAll('div[id^="flow-"]').forEach(flow => flow.classList.add('hidden'));
-                         const existingPlaceholder = section.querySelector('#temp-placeholder');
-                         if(existingPlaceholder) existingPlaceholder.remove();
+                     console.error(`Content section not found within module '${moduleId}' during module switch.`);
+                }
+
+
+                if (firstSidebarLink && firstSidebarLink.dataset.flow && section) {
+                     // --- Activate the first link and show its content ---
+                     firstSidebarLink.classList.remove(...inactiveLinkClass);
+                     firstSidebarLink.classList.add(...activeLinkClass);
+
+                     const firstFlowId = `flow-${firstSidebarLink.dataset.flow}`;
+                     const firstFlowContent = section.querySelector(`#${firstFlowId}`);
+                     if (firstFlowContent) {
+                         firstFlowContent.classList.remove('hidden');
+                     } else {
+                         console.error(`Content for first flow '${firstFlowId}' not found in module '${moduleId}'.`);
+                          section.insertAdjacentHTML('beforeend', '<p id="temp-placeholder" class="text-gray-500 italic">Select a flow from the sidebar.</p>'); // Add placeholder if first content fails
+                     }
+                } else {
+                    console.warn(`No sidebar links found or first link has no data-flow in module '${moduleId}' or section missing.`);
+                     if (section) {
                          section.insertAdjacentHTML('beforeend', '<p id="temp-placeholder" class="text-gray-500 italic">Select a flow from the sidebar.</p>'); // Add placeholder
-                    }
+                     }
                 }
             }
 
@@ -483,12 +515,11 @@
                     console.error(`showFlow ERROR: Module container 'module-${moduleId}' not found!`);
                     return;
                 }
-                // --- Ensure the correct module container is visible (redundant check, but safe) ---
+                // Ensure the correct module container is visible
                 if (moduleContainer.classList.contains('hidden')) {
                      console.warn(`showFlow called for hidden module '${moduleId}'. Making it visible.`);
                      moduleContainer.classList.remove('hidden');
                 }
-
 
                 const section = moduleContainer.querySelector('section');
                 if (!section) {
@@ -500,51 +531,39 @@
                 const placeholder = section.querySelector('#temp-placeholder');
                 if (placeholder) placeholder.remove();
 
-                // --- Hide all flow content DIVs within THIS module's section ---
+                // Hide all flow content DIVs within THIS module's section
                 const flowContentsInSection = section.querySelectorAll('div[id^="flow-"]');
-                // console.log(`Found ${flowContentsInSection.length} flow content divs in section for module ${moduleId}. Hiding all.`); // Debug
                 flowContentsInSection.forEach(flow => {
                     flow.classList.add('hidden');
                 });
 
                 // Construct and find the target flow content DIV within THIS section
                 const targetFlowId = `flow-${flowDataValue}`;
-                const activeFlow = section.querySelector(`#${targetFlowId}`); // Search within section
+                const activeFlow = section.querySelector(`#${targetFlowId}`);
 
                 // Show the target flow content DIV or display error
                 if (activeFlow) {
-                    // console.log(`Target flow element #${targetFlowId} FOUND. Removing hidden class.`); // Debug
                     activeFlow.classList.remove('hidden');
                 } else {
                     console.error(`showFlow ERROR: Could not find flow content element with ID: ${targetFlowId} within module '${moduleId}'`);
-                    // Display error message inside the section, clear existing content first
-                    section.innerHTML = `<p class="text-red-500 font-semibold">Error: Content for flow ID '${targetFlowId}' not found.</p>`;
+                    section.innerHTML = `<p class="text-red-500 font-semibold">Error: Content for flow ID '${targetFlowId}' not found.</p>`; // Keep error simple
                 }
 
-                // --- Update sidebar link styles within THIS module's sidebar ONLY ---
+                // Update sidebar link styles within THIS module's sidebar ONLY
                 const sidebar = moduleContainer.querySelector('.sidebar-nav');
                 if (sidebar) {
-                    // console.log(`Updating sidebar styles for module ${moduleId}.`); // Debug
                     sidebar.querySelectorAll('.sidebar-link').forEach(link => {
-                        link.classList.remove(...activeLinkClass); // Remove active styles
+                        link.classList.remove(...activeLinkClass); // Remove active styles from ALL links in this sidebar
                         link.classList.add(...inactiveLinkClass); // Ensure inactive styles are present
                     });
 
-                    // Apply active styles to the clicked link (if it exists and is passed)
+                    // Apply active styles ONLY to the clicked link
                     if (clickedLinkElement) {
-                         // console.log(`Applying active style to clicked link:`, clickedLinkElement); // Debug
-                         clickedLinkElement.classList.remove(...inactiveLinkClass); // Remove inactive styles
-                         clickedLinkElement.classList.add(...activeLinkClass); // Add active styles
+                         clickedLinkElement.classList.remove(...inactiveLinkClass); // Remove inactive styles from clicked link
+                         clickedLinkElement.classList.add(...activeLinkClass); // Add active styles to clicked link
                     } else {
-                        // This case happens when showModule calls showFlow for the first item
-                        // Find the first link again and style it if clickedLinkElement wasn't provided
-                        const firstLink = sidebar.querySelector('.sidebar-link');
-                        if (firstLink && firstLink.dataset.flow === flowDataValue) {
-                            firstLink.classList.remove(...inactiveLinkClass);
-                            firstLink.classList.add(...activeLinkClass);
-                        } else {
-                             console.warn("showFlow: Could not style the first link as active during module load.");
-                        }
+                        // This might occur if called without a specific link, e.g., on initial load
+                        console.warn("showFlow called without a specific clickedLinkElement to style.");
                     }
                 } else {
                     console.error(`Sidebar .sidebar-nav not found within module '${moduleId}' during style update.`);
@@ -578,7 +597,8 @@
                 });
             });
 
-            // Initial state - Show the default 'insured' module
+            // Initial state - Show the default 'insured' module and its first flow.
+            // showModule handles showing the correct first flow internally.
             showModule('insured');
 
         });
