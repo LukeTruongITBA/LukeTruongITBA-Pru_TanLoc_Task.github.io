@@ -20,19 +20,13 @@
         .sidebar-link {
             transition: all 0.2s ease-in-out;
         }
-        .flow-content {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Removed .flow-content class and @keyframes fadeIn */
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-        
+
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">CoverGo Platform: Business Flow Explorer</h1>
             <p class="text-lg text-gray-600 mt-2">An interactive guide to the platform's core processes.</p>
@@ -63,7 +57,7 @@
                     </aside>
                     <!-- Flow Detail Panel -->
                     <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <div id="flow-insured-1" class="flow-content">
+                        <div id="flow-insured-1"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Member Profile Management</h2>
                             <p class="text-gray-600 mb-6">Covers viewing and updating an insured member's core information, employment details, and dependent relationships.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -94,7 +88,7 @@
                                 </li>
                             </ol>
                         </div>
-                        <div id="flow-insured-2" class="flow-content hidden">
+                        <div id="flow-insured-2" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Member Permission and Access Management</h2>
                             <p class="text-gray-600 mb-6">Describes managing a member's system roles and resetting their Member Portal password.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -115,7 +109,7 @@
                                 </li>
                             </ol>
                         </div>
-                        <div id="flow-insured-3" class="flow-content hidden">
+                        <div id="flow-insured-3" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Member Claim and GOP Management (Admin View)</h2>
                             <p class="text-gray-600 mb-6">Details how an administrator views, filters, and creates new claims or Guarantees of Payment (GOP) for a member within their profile.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -142,7 +136,7 @@
                                 </li>
                             </ol>
                         </div>
-                        <div id="flow-insured-4" class="flow-content hidden">
+                        <div id="flow-insured-4" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Member Coverage Management</h2>
                             <p class="text-gray-600 mb-6">Describes reviewing an insured member's specific policy coverage, benefits, and making plan changes.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -165,7 +159,8 @@
                     <!-- Sidebar -->
                     <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
                         <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="policies">
-                            <li data-flow="policies-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Policy Information & Financial Review</li>
+                            {/* <!-- NOTE: The first item should NOT have active-link initially for non-default modules --> */}
+                            <li data-flow="policies-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Information & Financial Review</li>
                             <li data-flow="policies-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Member Movement)</li>
                             <li data-flow="policies-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Policy-Level)</li>
                             <li data-flow="policies-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy-Specific Member Inquiry</li>
@@ -173,7 +168,8 @@
                     </aside>
                     <!-- Flow Detail Panel -->
                     <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <div id="flow-policies-1" class="flow-content">
+                        {/* <!-- Content divs will be shown/hidden by JS --> */}
+                        <div id="flow-policies-1" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Policy Information and Financial Review</h2>
                             <p class="text-gray-600 mb-6">Covers searching for policies, reviewing comprehensive details, and managing financial records like debit notes and payments.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -186,7 +182,7 @@
                                 <li>Manually log payment transactions using the "Log payment transactions" function, noting automation is possible with integration.</li>
                             </ol>
                         </div>
-                        <div id="flow-policies-2" class="flow-content hidden">
+                        <div id="flow-policies-2" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Policy Endorsement (Member Movement)</h2>
                             <p class="text-gray-600 mb-6">Manages changes to the insured members covered under a policy, including additions, terminations, reinstatements, and information updates.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -206,7 +202,7 @@
                                 <li>Optionally, export the <strong>Member Movement report</strong>.</li>
                             </ol>
                         </div>
-                        <div id="flow-policies-3" class="flow-content hidden">
+                        <div id="flow-policies-3" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Policy Endorsement (Policy-Level Changes)</h2>
                             <p class="text-gray-600 mb-6">Covers initiating and tracking structural changes (endorsements) to the policy itself.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -218,7 +214,7 @@
                                 <li>Choose the type of change: adding a plan, updating terms/conditions, modifying policyholder details, or extending/terminating the policy period.</li>
                             </ol>
                         </div>
-                        <div id="flow-policies-4" class="flow-content hidden">
+                        <div id="flow-policies-4" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Policy-Specific Member Inquiry</h2>
                             <p class="text-gray-600 mb-6">Details looking up a specific member within a policy to review their policy-related information.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -241,7 +237,8 @@
                     <!-- Sidebar -->
                     <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
                         <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="broker">
-                            <li data-flow="broker-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Agent Case (Proposal) Management</li>
+                             {/* <!-- NOTE: The first item should NOT have active-link initially for non-default modules --> */}
+                            <li data-flow="broker-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Case (Proposal) Management</li>
                             <li data-flow="broker-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Policy Management</li>
                             <li data-flow="broker-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Client Management</li>
                             <li data-flow="broker-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Profile Management</li>
@@ -254,7 +251,8 @@
                     </aside>
                     <!-- Flow Detail Panel -->
                     <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <div id="flow-broker-1" class="flow-content">
+                        {/* <!-- Content divs will be shown/hidden by JS --> */}
+                        <div id="flow-broker-1" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Agent Case (Proposal) Management</h2>
                             <p class="text-gray-600 mb-6">Standard process for an agent (or Team Manager acting as one) to create and manage their own sales proposals.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -268,7 +266,7 @@
                                 <li>View notifications related to personal cases.</li>
                             </ol>
                         </div>
-                        <div id="flow-broker-2" class="flow-content hidden">
+                        <div id="flow-broker-2" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Agent Policy Management</h2>
                             <p class="text-gray-600 mb-6">How an agent (or Team Manager) views policies they handle.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -278,7 +276,7 @@
                                 <li>View personal policies under the <strong>My Policies</strong> tab.</li>
                             </ol>
                         </div>
-                        <div id="flow-broker-3" class="flow-content hidden">
+                        <div id="flow-broker-3" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Agent Client Management</h2>
                             <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their client records.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -289,7 +287,7 @@
                                 <li>View existing clients managed by the agent.</li>
                             </ol>
                         </div>
-                        <div id="flow-broker-4" class="flow-content hidden">
+                        <div id="flow-broker-4" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Agent Profile Management</h2>
                             <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their profile and password.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -300,7 +298,7 @@
                                 <li>Change personal password.</li>
                             </ol>
                         </div>
-                        <div id="flow-broker-5" class="flow-content hidden">
+                        <div id="flow-broker-5" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">5. Team Performance Monitoring (Team Manager)</h2>
                             <p class="text-gray-600 mb-6">Enables Team Managers to oversee cases (proposals) and policies handled by their team members.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -323,7 +321,7 @@
                                 <li><em>Note: Sub-Team Managers only see their direct sub-team's data.</em></li>
                             </ol>
                         </div>
-                        <div id="flow-broker-6" class="flow-content hidden">
+                        <div id="flow-broker-6" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">6. Team Structure Management (Team Manager)</h2>
                             <p class="text-gray-600 mb-6">Allows Team Managers to add sub-teams and rename teams they manage.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -344,7 +342,7 @@
                                 </li>
                             </ol>
                         </div>
-                        <div id="flow-broker-7" class="flow-content hidden">
+                        <div id="flow-broker-7" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">7. Agent Lifecycle Management (Team Manager)</h2>
                             <p class="text-gray-600 mb-6">Covers Team Manager actions: viewing, adding, editing, and re-assigning agents within their team structure.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -370,7 +368,7 @@
                                 </li>
                             </ol>
                         </div>
-                        <div id="flow-broker-8" class="flow-content hidden">
+                        <div id="flow-broker-8" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">8. Agent Deactivation (Team Manager)</h2>
                             <p class="text-gray-600 mb-6">Allows a Team Manager to terminate an agent's Broker Portal access.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -388,7 +386,7 @@
                                 <li>Deactivated agents cannot log in or reset passwords.</li>
                             </ol>
                         </div>
-                        <div id="flow-broker-9" class="flow-content hidden">
+                        <div id="flow-broker-9" class="hidden"> <!-- Removed flow-content class -->
                             <h2 class="text-2xl font-bold mb-3 text-indigo-700">9. Team Manager Role Administration (Admin Portal Task)</h2>
                             <p class="text-gray-600 mb-6">Admin Portal users grant or revoke Team Manager privileges, impacting Broker Portal view. <em>Performed outside the Broker Portal</em>.</p>
                             <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
@@ -402,7 +400,7 @@
                     </section>
                 </div>
             </div>
-            
+
         </main>
     </div>
 
@@ -410,91 +408,182 @@
         document.addEventListener('DOMContentLoaded', () => {
             const mainNav = document.getElementById('main-nav');
             const contentArea = document.getElementById('content-area');
+
+            if (!mainNav || !contentArea) {
+                console.error("Critical elements 'main-nav' or 'content-area' not found!");
+                return;
+            }
+
             const navButtons = mainNav.querySelectorAll('.nav-button');
             const moduleContents = contentArea.querySelectorAll('.module-content');
-            const sidebarNavs = contentArea.querySelectorAll('.sidebar-nav');
+            const sidebarNavs = contentArea.querySelectorAll('.sidebar-nav'); // NodeList of all ULs
 
-            const activeNavClass = 'bg-indigo-600 text-white shadow-md';
-            const inactiveNavClass = 'bg-white text-gray-700 hover:bg-indigo-50 shadow-sm';
-            const activeLinkClass = 'bg-indigo-100 text-indigo-700 font-semibold';
-            const inactiveLinkClass = 'text-gray-700 hover:bg-gray-100';
+            if (!sidebarNavs || sidebarNavs.length === 0) {
+                 console.error("Could not find any '.sidebar-nav' elements within 'content-area'!");
+                 return;
+            }
 
-            // Function to show a module
+            const activeNavClass = ['bg-indigo-600', 'text-white', 'shadow-md'];
+            const inactiveNavClass = ['bg-white', 'text-gray-700', 'hover:bg-indigo-50', 'shadow-sm'];
+            const activeLinkClass = ['bg-indigo-100', 'text-indigo-700', 'font-semibold'];
+            const inactiveLinkClass = ['text-gray-700', 'hover:bg-gray-100'];
+            // Removed initialActiveLinkClass as we will set it dynamically
+
             function showModule(moduleId) {
+                console.log(`Showing module: ${moduleId}`);
+                // Hide all module content areas first
                 moduleContents.forEach(module => {
                     module.classList.add('hidden');
                 });
+
                 const activeModule = document.getElementById(`module-${moduleId}`);
                 if (activeModule) {
                     activeModule.classList.remove('hidden');
+                } else {
+                    console.error(`Module content div 'module-${moduleId}' not found!`);
+                    return;
                 }
 
+                // Update main nav button styles
                 navButtons.forEach(button => {
+                     button.classList.remove(...activeNavClass, ...inactiveNavClass); // Remove all styles first
                     if (button.dataset.module === moduleId) {
-                        button.classList.add(...activeNavClass.split(' '));
-                        button.classList.remove(...inactiveNavClass.split(' '));
+                        button.classList.add(...activeNavClass);
                     } else {
-                        button.classList.add(...inactiveNavClass.split(' '));
-                        button.classList.remove(...activeNavClass.split(' '));
+                        button.classList.add(...inactiveNavClass);
                     }
                 });
 
-                // Activate the first flow in the new module
-                const firstSidebarLink = activeModule.querySelector('.sidebar-link');
-                if (firstSidebarLink) {
+                // --- Select the correct sidebar and first link within the *active* module ---
+                const moduleSidebar = activeModule.querySelector('.sidebar-nav');
+                const firstSidebarLink = moduleSidebar ? moduleSidebar.querySelector('.sidebar-link') : null;
+
+                if (firstSidebarLink && firstSidebarLink.dataset.flow) {
+                    // Call showFlow for the FIRST link of THIS module
                     showFlow(moduleId, firstSidebarLink.dataset.flow, firstSidebarLink);
+                } else {
+                    console.warn(`No sidebar links found or first link has no data-flow in module '${moduleId}'`);
+                    const section = activeModule.querySelector('section');
+                    if (section) {
+                         // Clear previous content or show placeholder
+                         section.querySelectorAll('div[id^="flow-"]').forEach(flow => flow.classList.add('hidden'));
+                         const existingPlaceholder = section.querySelector('#temp-placeholder');
+                         if(existingPlaceholder) existingPlaceholder.remove();
+                         section.insertAdjacentHTML('beforeend', '<p id="temp-placeholder" class="text-gray-500 italic">Select a flow from the sidebar.</p>'); // Add placeholder
+                    }
                 }
             }
 
-            // Function to show a specific flow
-            function showFlow(moduleId, flowId, clickedLink) {
-                const moduleContainer = document.getElementById(`module-${moduleId}`);
-                if (!moduleContainer) return;
 
-                moduleContainer.querySelectorAll('.flow-content').forEach(flow => {
+            function showFlow(moduleId, flowDataValue, clickedLinkElement) {
+                console.log(`Showing flow: Module='${moduleId}', FlowData='${flowDataValue}'`);
+
+                const moduleContainer = document.getElementById(`module-${moduleId}`);
+                if (!moduleContainer) {
+                    console.error(`showFlow ERROR: Module container 'module-${moduleId}' not found!`);
+                    return;
+                }
+                // --- Ensure the correct module container is visible (redundant check, but safe) ---
+                if (moduleContainer.classList.contains('hidden')) {
+                     console.warn(`showFlow called for hidden module '${moduleId}'. Making it visible.`);
+                     moduleContainer.classList.remove('hidden');
+                }
+
+
+                const section = moduleContainer.querySelector('section');
+                if (!section) {
+                    console.error(`showFlow ERROR: Content section not found within module '${moduleId}'`);
+                    return;
+                }
+
+                 // Remove placeholder if it exists
+                const placeholder = section.querySelector('#temp-placeholder');
+                if (placeholder) placeholder.remove();
+
+                // --- Hide all flow content DIVs within THIS module's section ---
+                const flowContentsInSection = section.querySelectorAll('div[id^="flow-"]');
+                // console.log(`Found ${flowContentsInSection.length} flow content divs in section for module ${moduleId}. Hiding all.`); // Debug
+                flowContentsInSection.forEach(flow => {
                     flow.classList.add('hidden');
                 });
-                
-                const activeFlow = document.getElementById(flowId);
+
+                // Construct and find the target flow content DIV within THIS section
+                const targetFlowId = `flow-${flowDataValue}`;
+                const activeFlow = section.querySelector(`#${targetFlowId}`); // Search within section
+
+                // Show the target flow content DIV or display error
                 if (activeFlow) {
+                    // console.log(`Target flow element #${targetFlowId} FOUND. Removing hidden class.`); // Debug
                     activeFlow.classList.remove('hidden');
+                } else {
+                    console.error(`showFlow ERROR: Could not find flow content element with ID: ${targetFlowId} within module '${moduleId}'`);
+                    // Display error message inside the section, clear existing content first
+                    section.innerHTML = `<p class="text-red-500 font-semibold">Error: Content for flow ID '${targetFlowId}' not found.</p>`;
                 }
 
-                moduleContainer.querySelectorAll('.sidebar-link').forEach(link => {
-                    link.classList.remove(...activeLinkClass.split(' '));
-                    link.classList.add(...inactiveLinkClass.split(' '));
-                });
+                // --- Update sidebar link styles within THIS module's sidebar ONLY ---
+                const sidebar = moduleContainer.querySelector('.sidebar-nav');
+                if (sidebar) {
+                    // console.log(`Updating sidebar styles for module ${moduleId}.`); // Debug
+                    sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+                        link.classList.remove(...activeLinkClass); // Remove active styles
+                        link.classList.add(...inactiveLinkClass); // Ensure inactive styles are present
+                    });
 
-                if (clickedLink) {
-                    clickedLink.classList.add(...activeLinkClass.split(' '));
-                    clickedLink.classList.remove(...inactiveLinkClass.split(' '));
+                    // Apply active styles to the clicked link (if it exists and is passed)
+                    if (clickedLinkElement) {
+                         // console.log(`Applying active style to clicked link:`, clickedLinkElement); // Debug
+                         clickedLinkElement.classList.remove(...inactiveLinkClass); // Remove inactive styles
+                         clickedLinkElement.classList.add(...activeLinkClass); // Add active styles
+                    } else {
+                        // This case happens when showModule calls showFlow for the first item
+                        // Find the first link again and style it if clickedLinkElement wasn't provided
+                        const firstLink = sidebar.querySelector('.sidebar-link');
+                        if (firstLink && firstLink.dataset.flow === flowDataValue) {
+                            firstLink.classList.remove(...inactiveLinkClass);
+                            firstLink.classList.add(...activeLinkClass);
+                        } else {
+                             console.warn("showFlow: Could not style the first link as active during module load.");
+                        }
+                    }
+                } else {
+                    console.error(`Sidebar .sidebar-nav not found within module '${moduleId}' during style update.`);
                 }
             }
+
 
             // Attach event listener to main nav
             mainNav.addEventListener('click', (e) => {
-                if (e.target.classList.contains('nav-button')) {
-                    const moduleId = e.target.dataset.module;
-                    showModule(moduleId);
+                const targetButton = e.target.closest('.nav-button');
+                if (targetButton && targetButton.dataset.module) {
+                    showModule(targetButton.dataset.module);
                 }
             });
+
 
             // Attach event listeners to all sidebars
             sidebarNavs.forEach(sidebar => {
                 sidebar.addEventListener('click', (e) => {
                     const clickedLink = e.target.closest('.sidebar-link');
                     if (clickedLink) {
-                        const moduleId = sidebar.dataset.moduleId;
-                        const flowId = clickedLink.dataset.flow;
-                        showFlow(moduleId, flowId, clickedLink);
+                        const moduleId = sidebar.dataset.moduleId; // Get module from the UL clicked within
+                        const flowDataValue = clickedLink.dataset.flow;
+
+                        if (moduleId && flowDataValue) {
+                            showFlow(moduleId, flowDataValue, clickedLink);
+                        } else {
+                             console.error("Missing moduleId or flowDataValue on sidebar click.", { moduleId, flowDataValue });
+                        }
                     }
                 });
             });
 
-            // Initial state (show default module and flow)
-            // This is handled by default classes in HTML
+            // Initial state - Show the default 'insured' module
+            showModule('insured');
+
         });
     </script>
 
 </body>
 </html>
+
