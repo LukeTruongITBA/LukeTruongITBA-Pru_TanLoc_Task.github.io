@@ -3,607 +3,739 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoverGo Business Flow Explorer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Harmony (BG: gray-100, Content: white, Accent: indigo-600) -->
-    <!-- Application Structure Plan: A top-level tabbed navigation for the 3 main modules (Insured, Policies, Broker). Selecting a module reveals a 2-column layout: a left-hand sidebar for sub-navigation (listing the flows for that module) and a right-hand content panel to display the selected flow's details (description and steps). This master-detail structure is optimal for presenting hierarchical documentation, allowing users to easily scan all flows in a section and deep-dive into any specific one without leaving the page. -->
-    <!-- Visualization & Content Choices: The source report is 100% textual process documentation. Goal: Organize/Inform. Presentation Method: All content is presented using structured, dynamic HTML (H2/H3/p/ol/ul). Interaction: Vanilla JS toggles the visibility of content sections based on user clicks on the main nav tabs and sidebar links. Justification: This provides the cleanest, most intuitive interactive experience for navigating text-heavy documentation. No data charts are needed. No SVG/Mermaid used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>CoverGo Health System Analysis</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4E56C0 0%, #9B5DE0 50%, #D78FEE 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .nav-button {
-            transition: all 0.2s ease-in-out;
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(253, 207, 250, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(155, 93, 224, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
-        .sidebar-link {
-            transition: all 0.2s ease-in-out;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
-        /* Removed .flow-content class and @keyframes fadeIn */
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            cursor: pointer;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #4E56C0;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .content-area {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(78, 86, 192, 0.9) 0%, rgba(155, 93, 224, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(78, 86, 192, 0.3);
+            background: linear-gradient(135deg, rgba(155, 93, 224, 0.9) 0%, rgba(215, 143, 238, 0.9) 100%);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .card p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .flow-container {
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            background: rgba(253, 207, 250, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-left: 4px solid #9B5DE0;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(155, 93, 224, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .flow-step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(155, 93, 224, 0.15);
+            border-left-color: #4E56C0;
+            background: rgba(253, 207, 250, 0.35);
+        }
+
+        .flow-step h4 {
+            color: #4E56C0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .flow-step p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background: rgba(253, 207, 250, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(215, 143, 238, 0.3);
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .highlight-box h3 {
+            color: #4E56C0;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .highlight-box ul {
+            margin-left: 20px;
+            color: #333;
+            line-height: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(78, 86, 192, 0.85) 0%, rgba(155, 93, 224, 0.85) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(155, 93, 224, 0.9) 0%, rgba(215, 143, 238, 0.9) 100%);
+            box-shadow: 0 8px 30px rgba(155, 93, 224, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        h2 {
+            color: #4E56C0;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #9B5DE0;
+            margin: 20px 0 10px 0;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        p, li {
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 25px;
+        }
+
+        strong {
+            color: #4E56C0;
+        }
+
+        .embed-container {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 16px;
+            background: rgba(253, 207, 250, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(155, 93, 224, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .embed-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, rgba(78, 86, 192, 0.9) 0%, rgba(155, 93, 224, 0.9) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .embed-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(155, 93, 224, 0.4);
+            background: linear-gradient(135deg, rgba(155, 93, 224, 0.9) 0%, rgba(215, 143, 238, 0.9) 100%);
+        }
+
+        .embed-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .content-area {
+                padding: 20px;
+            }
+            .tab-btn {
+                font-size: 0.9em;
+                padding: 10px 16px;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 CoverGo Health System</h1>
+            <p>End-to-End Core Insurance Platform Analysis</p>
+        </div>
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showSection('overview')">Overview</button>
+            <button class="tab-btn" onclick="showSection('ecosystem')">Ecosystem</button>
+            <button class="tab-btn" onclick="showSection('broker')">Broker Portal</button>
+            <button class="tab-btn" onclick="showSection('member')">Member Module</button>
+            <button class="tab-btn" onclick="showSection('insights')">Insights</button>
+        </div>
 
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">CoverGo Platform: Business Flow Explorer</h1>
-            <p class="text-lg text-gray-600 mt-2">An interactive guide to the platform's core processes.</p>
-        </header>
+        <div class="content-area">
+            <!-- Overview Section -->
+            <div id="overview" class="section active">
+                <h2>📊 Platform Overview</h2>
+                <p>CoverGo for Health is an end-to-end core insurance platform for both individual and group health insurance. It's a fully configurable, no-code, and API-driven solution designed to streamline the health insurance ecosystem.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">60%</div>
+                        <div class="stat-label">Claims Process Automation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">80%</div>
+                        <div class="stat-label">Operational Efficiency Boost</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">65%</div>
+                        <div class="stat-label">Cost Reduction</div>
+                    </div>
+                </div>
 
-        <!-- Main Module Navigation -->
-        <nav class="flex justify-center space-x-2 md:space-x-4 mb-8" id="main-nav">
-            <button data-module="insured" class="nav-button active-nav py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white shadow-md">Insured (Members)</button>
-            <button data-module="policies" class="nav-button py-2 px-4 rounded-lg font-semibold bg-white text-gray-700 hover:bg-indigo-50 shadow-sm">Policies</button>
-            <button data-module="broker" class="nav-button py-2 px-4 rounded-lg font-semibold bg-white text-gray-700 hover:bg-indigo-50 shadow-sm">Broker Portal</button>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main id="content-area">
-
-            <!-- Insured Module Content (default visible) -->
-            <div id="module-insured" class="module-content">
-                <p class="text-center text-gray-700 mb-6 md:text-lg">This section details the flows for managing insured members, from their personal profiles and permissions to their claims and coverage.</p>
-                <div class="md:flex md:space-x-6">
-                    <!-- Sidebar -->
-                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
-                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="insured">
-                            <li data-flow="insured-1" class="sidebar-link active-link block w-full text-left py-2 px-3 rounded-md bg-indigo-100 text-indigo-700 font-semibold cursor-pointer">Member Profile Management</li>
-                            <li data-flow="insured-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Permission & Access Management</li>
-                            <li data-flow="insured-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Claim & GOP Management (Admin)</li>
-                            <li data-flow="insured-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Coverage Management</li>
-                        </ul>
-                    </aside>
-                    <!-- Flow Detail Panel -->
-                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <div id="flow-insured-1"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Member Profile Management</h2>
-                            <p class="text-gray-600 mb-6">Covers viewing and updating an insured member's core information, employment details, and dependent relationships.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Navigate to the <strong>Members</strong> module.</li>
-                                <li>Search for a member using their unique number, name, email ID, or company name.</li>
-                                <li>Click the member's ID link to access their profile.</li>
-                                <li>The <strong>Member Details tab</strong> is displayed by default.</li>
-                                <li><strong>To Edit Personal Information:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Click the <strong>Edit</strong> button in the <strong>Member Details</strong> section.</li>
-                                        <li>Modify necessary information (e.g., bank account, contact number).</li>
-                                        <li>Click <strong>Submit</strong> to save changes.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Edit Employment:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Click the <strong>Edit</strong> button in the <strong>Employment</strong> section.</li>
-                                        <li>Update the <strong>Company Name</strong> or <strong>Member Type</strong>.</li>
-                                        <li>Click <strong>Submit</strong>.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To View Dependents:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Scroll to the <strong>Relationships</strong> section to see dependents and their status (Active/Inactive).</li>
-                                        <li>Click a dependent's name to view their profile.</li>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
-                        <div id="flow-insured-2" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Member Permission and Access Management</h2>
-                            <p class="text-gray-600 mb-6">Describes managing a member's system roles and resetting their Member Portal password.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
-                                <li><strong>To Manage Roles:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>In the <strong>Member Details tab</strong>, click <strong>Edit</strong> in the <strong>Permission Group</strong> section.</li>
-                                        <li>To add a role, click <strong>Add Role</strong>, select the permission group (e.g., HR Manager), click <strong>Add</strong>, and then <strong>Save</strong>.</li>
-                                        <li>To remove a role, click the <strong>X icon</strong> next to the role and click <strong>Confirm Remove</strong>.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Reset a Member's Password:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>On the member's profile, scroll down and click the <strong>Reset Password</strong> button.</li>
-                                        <li>Click <strong>Reset Member Password</strong> to send a reset link for the Member Portal to the member's email.</li>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
-                        <div id="flow-insured-3" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Member Claim and GOP Management (Admin View)</h2>
-                            <p class="text-gray-600 mb-6">Details how an administrator views, filters, and creates new claims or Guarantees of Payment (GOP) for a member within their profile.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
-                                <li>Click the <strong>Claims</strong> tab to see a summary of member claims and statuses.</li>
-                                <li><strong>To Find a Claim:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li><strong>Search:</strong> Type the unique claim ID in the search box.</li>
-                                        <li><strong>Filter:</strong> Click the <strong>filter icon</strong> and apply filters (status, approver, handler, type).</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Create a New Claim (e.g., from paper submission):</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>From the <strong>Claims</strong> tab, click <strong>Create New Claims</strong> and select the product type (e.g., Group Medical).</li>
-                                        <li>Verify information and click <strong>Submit</strong>. The claim is created.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Create a New GOP:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Navigate to the <strong>GOP</strong> section/tab within the member's profile.</li>
-                                        <li>Initiate the GOP creation process, often used when requested via phone or email.</li>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
-                        <div id="flow-insured-4" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Member Coverage Management</h2>
-                            <p class="text-gray-600 mb-6">Describes reviewing an insured member's specific policy coverage, benefits, and making plan changes.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Access the specific member's profile in the <strong>Members</strong> module.</li>
-                                <li>Navigate to the <strong>Plans & Benefits</strong> tab.</li>
-                                <li>Review detailed coverage information for each available policy, including benefits provided and remaining benefits.</li>
-                                <li>Initiate actions such as changing the member's plan or terminating their coverage.</li>
-                                <li>Optionally, download a comprehensive member-specific information report.</li>
-                            </ol>
-                        </div>
-                    </section>
+                <div class="highlight-box">
+                    <h3>🎯 Key Capabilities</h3>
+                    <ul>
+                        <li><strong>No-Code Configuration:</strong> Build insurance products without programming</li>
+                        <li><strong>API-Driven:</strong> Seamless integration with existing systems</li>
+                        <li><strong>End-to-End:</strong> From product design to claims settlement</li>
+                        <li><strong>Digital Transformation:</strong> Accelerate modernization initiatives</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Policies Module Content (hidden) -->
-            <div id="module-policies" class="module-content hidden">
-                <p class="text-center text-gray-700 mb-6 md:text-lg">Explore the business flows for end-to-end policy administration, including financial reviews, member endorsements, and policy-level changes.</p>
-                <div class="md:flex md:space-x-6">
-                    <!-- Sidebar -->
-                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
-                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="policies">
-                            <!-- Removed invalid comment -->
-                            <li data-flow="policies-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Information & Financial Review</li>
-                            <li data-flow="policies-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Member Movement)</li>
-                            <li data-flow="policies-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy Endorsement (Policy-Level)</li>
-                            <li data-flow="policies-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Policy-Specific Member Inquiry</li>
-                        </ul>
-                    </aside>
-                    <!-- Flow Detail Panel -->
-                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <!-- Removed invalid comment -->
-                        <div id="flow-policies-1" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Policy Information and Financial Review</h2>
-                            <p class="text-gray-600 mb-6">Covers searching for policies, reviewing comprehensive details, and managing financial records like debit notes and payments.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Navigate to the <strong>Policies Module</strong>.</li>
-                                <li>Use search filters to find and select a specific policy.</li>
-                                <li>Access the policy's comprehensive information via tabs like <strong>Overview</strong>, <strong>Insureds</strong>, <strong>Transactions</strong>, <strong>Billing & Collection</strong>, <strong>Endorsements</strong>, <strong>Logs</strong>, and <strong>Member Movement</strong>.</li>
-                                <li>Navigate to <strong>Billing & Collection</strong> or <strong>Transactions</strong> to review financial records.</li>
-                                <li>Use the "Issue debit notes" function to create and deliver debit notes to the policyholder.</li>
-                                <li>Manually log payment transactions using the "Log payment transactions" function, noting automation is possible with integration.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-policies-2" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Policy Endorsement (Member Movement)</h2>
-                            <p class="text-gray-600 mb-6">Manages changes to the insured members covered under a policy, including additions, terminations, reinstatements, and information updates.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
-                                <li>Navigate to the <strong>Member Movement</strong> section.</li>
-                                <li>Optionally, filter movements by status (ongoing or completed).</li>
-                                <li>Select the desired member movement action:
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li><strong>Member Addition:</strong> Add members manually or via bulk upload.</li>
-                                        <li><strong>Terminate Membership:</strong> End coverage for specific members.</li>
-                                        <li><strong>Reinstate Member:</strong> Reactivate previously terminated members.</li>
-                                        <li><strong>Modify Coverage:</strong> Change coverage details for members.</li>
-                                        <li><strong>Update Information:</strong> Update member personal/contact details.</li>
-                                    </ul>
-                                </li>
-                                <li>Optionally, export the <strong>Member Movement report</strong>.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-policies-3" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Policy Endorsement (Policy-Level Changes)</h2>
-                            <p class="text-gray-600 mb-6">Covers initiating and tracking structural changes (endorsements) to the policy itself.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
-                                <li>Navigate to the <strong>Endorsements</strong> tab.</li>
-                                <li>Review the history of existing policy endorsements.</li>
-                                <li>Select <strong>Initiate new endorsements</strong>.</li>
-                                <li>Choose the type of change: adding a plan, updating terms/conditions, modifying policyholder details, or extending/terminating the policy period.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-policies-4" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Policy-Specific Member Inquiry</h2>
-                            <p class="text-gray-600 mb-6">Details looking up a specific member within a policy to review their policy-related information.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Find and access the specific policy within the <strong>Policies Module</strong>.</li>
-                                <li>Navigate to the <strong>Insureds</strong> tab.</li>
-                                <li>Use search filters to find the specific member.</li>
-                                <li>Click the member to access their policy-related information.</li>
-                                <li>Review details across tabs: Member Details, Plans & Benefits, Claims, GOP, and Transactions.</li>
-                            </ol>
-                        </div>
-                    </section>
+            <!-- Ecosystem Section -->
+            <div id="ecosystem" class="section">
+                <h2>🌐 System Ecosystem</h2>
+                
+                <h3>Portals</h3>
+                <div class="module-grid">
+                    <div class="card">
+                        <h3>🔧 Admin Portal</h3>
+                        <p>Used by insurers to manage clients, policies, claims, products, and reporting. Central command for operations.</p>
+                    </div>
+                    <div class="card">
+                        <h3>💼 Broker Portal</h3>
+                        <p>For agents and team managers to create proposals, manage sales pipeline, and handle team structure.</p>
+                    </div>
+                    <div class="card">
+                        <h3>👤 Member Portal</h3>
+                        <p>Insured members create reimbursement claims for out-of-network healthcare services.</p>
+                    </div>
+                    <div class="card">
+                        <h3>🏥 Provider Portal</h3>
+                        <p>Network providers (hospitals/clinics) create cashless claims for direct settlement.</p>
+                    </div>
+                    <div class="card">
+                        <h3>👔 HR Portal</h3>
+                        <p>HR personnel create group insurance claims on behalf of their employees.</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 40px;">Core Management Modules</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>📦 Product Module</h4>
+                        <p>Configure modular insurance products without coding. Define structure, benefits, limits, deductibles, and underwriting rules.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>📝 Proposals Module</h4>
+                        <p>Initiate proposal process, configure offers, and add members to potential policies.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>📋 Policies Module</h4>
+                        <p>Manage policy details, financial records, and track Member Movement (Addition, Termination, Plan Changes).</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>👥 Members Module</h4>
+                        <p>Access comprehensive member details and initiate claims (reimbursement, GOP).</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>💰 Claims Module</h4>
+                        <p>One-stop-shop for managing all claim types: reimbursement, cashless, GOP, and regular claims.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Broker Module Content (hidden) -->
-            <div id="module-broker" class="module-content hidden">
-                <p class="text-center text-gray-700 mb-6 md:text-lg">This module covers all activities for Agents and Team Managers, from proposal management and team monitoring to agent lifecycle and access control.</p>
-                <div class="md:flex md:space-x-6">
-                    <!-- Sidebar -->
-                    <aside class="md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
-                        <ul class="sidebar-nav bg-white p-3 rounded-lg shadow-sm space-y-1" data-module-id="broker">
-                             <!-- Removed invalid comment -->
-                            <li data-flow="broker-1" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Case (Proposal) Management</li>
-                            <li data-flow="broker-2" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Policy Management</li>
-                            <li data-flow="broker-3" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Client Management</li>
-                            <li data-flow="broker-4" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Profile Management</li>
-                            <li data-flow="broker-5" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Team Performance Monitoring (Manager)</li>
-                            <li data-flow="broker-6" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Team Structure Management (Manager)</li>
-                            <li data-flow="broker-7" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Lifecycle Management (Manager)</li>
-                            <li data-flow="broker-8" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Agent Deactivation (Manager)</li>
-                            <li data-flow="broker-9" class="sidebar-link block w-full text-left py-2 px-3 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer">Role Administration (Admin Task)</li>
-                        </ul>
-                    </aside>
-                    <!-- Flow Detail Panel -->
-                    <section class="md:w-2/3 lg:w-3/4 bg-white p-6 md:p-8 rounded-lg shadow-md">
-                        <!-- Removed invalid comment -->
-                        <div id="flow-broker-1" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">1. Agent Case (Proposal) Management</h2>
-                            <p class="text-gray-600 mb-6">Standard process for an agent (or Team Manager acting as one) to create and manage their own sales proposals.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in to the Broker Portal.</li>
-                                <li>Navigate to the <strong>Cases</strong> menu.</li>
-                                <li>Click <strong>Create Case</strong> to start a new proposal.</li>
-                                <li>View personal cases under the <strong>My Cases</strong> tab.</li>
-                                <li>Access a specific case to manage it, including actions like accepting/rejecting offers.</li>
-                                <li>Create and view tasks related to personal cases.</li>
-                                <li>View notifications related to personal cases.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-2" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">2. Agent Policy Management</h2>
-                            <p class="text-gray-600 mb-6">How an agent (or Team Manager) views policies they handle.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in to the Broker Portal.</li>
-                                <li>Navigate to the <strong>Policies</strong> menu.</li>
-                                <li>View personal policies under the <strong>My Policies</strong> tab.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-3" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">3. Agent Client Management</h2>
-                            <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their client records.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in to the Broker Portal.</li>
-                                <li>Navigate to the <strong>Clients</strong> menu.</li>
-                                <li>Create new client records.</li>
-                                <li>View existing clients managed by the agent.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-4" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">4. Agent Profile Management</h2>
-                            <p class="text-gray-600 mb-6">How agents (or Team Managers) manage their profile and password.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in to the Broker Portal.</li>
-                                <li>Access the user profile section.</li>
-                                <li>View personal profile details.</li>
-                                <li>Change personal password.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-5" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">5. Team Performance Monitoring (Team Manager)</h2>
-                            <p class="text-gray-600 mb-6">Enables Team Managers to oversee cases (proposals) and policies handled by their team members.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in to the Broker Portal as a Team Manager.</li>
-                                <li><strong>To Monitor Cases:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Navigate to the <strong>Cases</strong> menu.</li>
-                                        <li>Click the <strong>My Team's Cases</strong> tab to view team/sub-team cases.</li>
-                                        <li>Use <strong>Filter By Member</strong> or <strong>Filter by Team</strong>.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Monitor Policies:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Navigate to the <strong>Policies</strong> menu.</li>
-                                        <li>Click the <strong>My Team's Policies</strong> tab to view team/sub-team policies.</li>
-                                        <li>Use <strong>Filter By Member</strong> or <strong>Filter by Team</strong>.</li>
-                                    </ul>
-                                </li>
-                                <li><em>Note: Sub-Team Managers only see their direct sub-team's data.</em></li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-6" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">6. Team Structure Management (Team Manager)</h2>
-                            <p class="text-gray-600 mb-6">Allows Team Managers to add sub-teams and rename teams they manage.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
-                                <li><strong>To Add a Sub-Team:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Hover over the parent team name; click the <strong>+</strong> icon.</li>
-                                        <li>Type the new sub-team name and press <strong>Enter</strong>. Name must be unique.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Update a Team Name:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Hover over the team name; click the <strong>Pen</strong> icon.</li>
-                                        <li>Edit the name.</li>
-                                        <li>Click the <strong>check mark</strong> icon to save. Name must be unique.</li>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-7" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">7. Agent Lifecycle Management (Team Manager)</h2>
-                            <p class="text-gray-600 mb-6">Covers Team Manager actions: viewing, adding, editing, and re-assigning agents within their team structure.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
-                                <li><strong>To View Agent Details:</strong> Click the <strong>Agent ID</strong> link. Bank details are hidden.</li>
-                                <li><strong>To Add a New Agent:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Click <strong>Add Agent</strong>.</li>
-                                        <li>Fill the form; Distributor is pre-set. Select team/sub-team from the limited dropdown.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Edit Agent Details:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>Click <strong>Edit</strong> next to the agent's record.</li>
-                                        <li>Modify details and save.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>To Re-assign Agent:</strong>
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li>While editing an agent, use the <strong>Team</strong> dropdown to select a new team/sub-team within the manager's hierarchy.</li>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-8" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">8. Agent Deactivation (Team Manager)</h2>
-                            <p class="text-gray-600 mb-6">Allows a Team Manager to terminate an agent's Broker Portal access.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>Log in as a Team Manager and go to the <strong>Teams</strong> menu.</li>
-                                <li>Find the agent, click the <strong>[...]</strong> menu, select <strong>Terminate Agent</strong>.</li>
-                                <li>Choose timing:
-                                    <ul class="list-disc list-outside space-y-1 pl-6 mt-2">
-                                        <li><strong>Immediate:</strong> Select <strong>Terminate agent immediately</strong> and confirm. Status becomes <strong>Inactive</strong>.</li>
-                                        <li><strong>Future Date:</strong> Select <strong>Terminate agent at a future date</strong>, pick a valid future date, and confirm. Agent remains <strong>Active</strong> but marked until the date, then becomes <strong>Inactive</strong>.</li>
-                                    </ul>
-                                </li>
-                                <li>Status is indicated visually (e.g., bullets).</li>
-                                <li>A future date can be updated before it arrives.</li>
-                                <li>Deactivated agents cannot log in or reset passwords.</li>
-                            </ol>
-                        </div>
-                        <div id="flow-broker-9" class="hidden"> <!-- Removed flow-content class -->
-                            <h2 class="text-2xl font-bold mb-3 text-indigo-700">9. Team Manager Role Administration (Admin Portal Task)</h2>
-                            <p class="text-gray-600 mb-6">Admin Portal users grant or revoke Team Manager privileges, impacting Broker Portal view. <em>Performed outside the Broker Portal</em>.</p>
-                            <h3 class="text-xl font-semibold mb-3 text-gray-800">Overall Steps:</h3>
-                            <ol class="list-decimal list-outside space-y-3 pl-6 text-gray-700">
-                                <li>An Admin Portal user navigates to the agent's profile.</li>
-                                <li><strong>To Grant:</strong> Assign the Team Manager role (process implied).</li>
-                                <li><strong>To Revoke:</strong> Click <strong>Unset Manager</strong>.</li>
-                                <li>Broker Portal view changes on the agent's next login, losing team tabs if revoked.</li>
-                            </ol>
-                        </div>
-                    </section>
+            <!-- Broker Portal Section -->
+            <div id="broker" class="section">
+                <h2>💼 Broker Portal Flows</h2>
+
+                <div class="highlight-box">
+                    <h3>👥 Key Roles</h3>
+                    <ul>
+                        <li><strong>Agent:</strong> Create proposals, manage cases/policies, create clients</li>
+                        <li><strong>Agent Manager:</strong> All agent functions + team oversight and structure management</li>
+                    </ul>
+                </div>
+
+                <h3>Flow 1: Team & Agent Administration</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>🏗️ Team Structure Management</h4>
+                        <p><strong>Create Sub-Teams:</strong> Team Managers can create and update sub-teams with unique names within their hierarchy.</p>
+                        <p><strong>Limitation:</strong> Cannot create first-level/root teams.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>👤 Agent Lifecycle</h4>
+                        <p><strong>Add/Edit/Re-assign:</strong> Manage agents within their teams. When agents move teams, all their cases and policies move with them.</p>
+                        <p><strong>Visibility:</strong> Old team manager loses access; new team manager gains visibility.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>🚫 Agent Deactivation</h4>
+                        <p><strong>Same Day:</strong> Immediate access termination.</p>
+                        <p><strong>Future Date:</strong> Scheduled termination. Agent remains active until the date, then status changes to Inactive. No login or password reset after deactivation.</p>
+                    </div>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/1tH7Vx1zn5otx9dtJWC57WQKPRoAdqbXV/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Flow Diagram
+                    </a>
+                </div>
+
+                <h3>Flow 2: Proposal Creation & Policy Issuance</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>1️⃣ Proposal Creation</h4>
+                        <p>Agent selects product type, enters client info, and configures offer details. System generates premium based on product settings.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>2️⃣ Offer Acceptance</h4>
+                        <p>Once one offer is accepted, all other offers are automatically rejected.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>3️⃣ Application & Member Onboarding</h4>
+                        <p>File application form, add members manually or via bulk upload. System validates data automatically.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>4️⃣ Underwriting</h4>
+                        <p>Automatic rules run: members can be auto-rejected (e.g., age > 75) or flagged for manual review (e.g., smokers).</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>5️⃣ Issuance</h4>
+                        <p>Configure documents and billing info, then click "Issue Policy" to finalize.</p>
+                    </div>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/12BErBx-Eu7BGc3bx96Pu8XvLCUvAIo8e/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Flow Diagram
+                    </a>
+                </div>
+
+                <h3>Flow 3: Client Management & Team Oversight</h3>
+                <div class="highlight-box">
+                    <h3>Client Management</h3>
+                    <ul>
+                        <li>Agents create Individual and Company clients</li>
+                        <li>Company client edits during proposals auto-update the database</li>
+                        <li>New company status: INACTIVE → ACTIVE when policy issued</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>Team Performance Oversight</h3>
+                    <ul>
+                        <li>Managers view "My Team's Cases/Policies"</li>
+                        <li>Filter by Agent or Team</li>
+                        <li><strong>Restrictions:</strong> Sub-Team Managers can't view upstream data; Managers can't create cases for agents</li>
+                    </ul>
+                </div>
+                
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/1AzamyW329m8omWinxJcdtnL7jD3ZMsOB/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Client Management Diagram
+                    </a>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/16lopys-Un3S61oF7KnpDPWaAaD7QHLb7/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Team Oversight Diagram
+                    </a>
                 </div>
             </div>
 
-        </main>
+            <!-- Member Module Section -->
+            <div id="member" class="section">
+                <h2>👤 Insured Member Module</h2>
+
+                <h3>Flow 1: Member Onboarding & Underwriting</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>📥 Data Entry</h4>
+                        <p>Add members via bulk upload or manually. Must fill at least one unique ID: National ID, Passport Number, or Staff Number.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>🔍 Automatic Validation</h4>
+                        <p>System validates data against required formats automatically.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>⚖️ Underwriting Assessment</h4>
+                        <p>Members evaluated by pre-defined rules. Results: Rejected (hard rules violated) or Manual Review (flagged for human review).</p>
+                    </div>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/1qtGnVk8lnJJTILRLFR3dzwAec4an9aiV/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Flow Diagram
+                    </a>
+                </div>
+
+                <h3>Flow 2: Policy Maintenance & Coverage Updates</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>✏️ Update Member Info</h4>
+                        <p>Admins modify personal details, contact info, and coverage details through Policies or Members Module.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>🔄 Plan Changes</h4>
+                        <p>Change individual member plans as needed.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>⏹️ Termination & Reinstatement</h4>
+                        <p>Terminate or reinstate specific member coverage.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>🤖 Automatic System Updates</h4>
+                        <p>When edited, system auto-updates member details across all policies, recalculates pricing, and reruns underwriting rules. Changes logged as Member Movement.</p>
+                    </div>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/11v4wvBgabU32ST-YZYzhXi-6Wdw-KpSr/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Flow Diagram
+                    </a>
+                </div>
+
+                <h3>Flow 3: Member Access Management</h3>
+                <div class="flow-step">
+                    <h4>🔑 Password Reset</h4>
+                    <p>Admin accesses member record, clicks "Reset Password" in Member Details tab. System sends portal reset link to member's registered email.</p>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/151b1XjSObZhcdapjUd0dG_8X-MFIhxs0/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Flow Diagram
+                    </a>
+                </div>
+
+                <h3>Flow 4 & 5: Claim Creation & Settlement</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>📄 Claim Creation</h4>
+                        <p><strong>Self-Service:</strong> Members create reimbursement claims via Member Portal for out-of-network services.</p>
+                        <p><strong>Admin-Initiated:</strong> Admin creates GOP or new claims on member's behalf via Members Module.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>✅ Claim Settlement</h4>
+                        <p>For approved claims: Claim Handler clicks "Settle Claim" → "Export for settlement" (generates batch ID) → Process payment → "Mark as Settle" → Status: Settled.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>💸 Shortfall Management</h4>
+                        <p>For cashless claims with shortfalls: Admin sends Debit Note to Member → Mark as Settled (Member) once payment received.</p>
+                    </div>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/1ajm4ChoxZHjD5THh8Ow8rmtQBd3CpvXo/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Claim Creation Diagram
+                    </a>
+                </div>
+                <div class="embed-container">
+                    <a href="https://drive.google.com/file/d/1cidurnBEye3u8keDPXPgUrXNW2nBlWsm/view?usp=drive_link" target="_blank" class="embed-link">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        View Settlement Diagram
+                    </a>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div id="insights" class="section">
+                <h2>💡 Key Insights & Recommendations</h2>
+
+                <div class="highlight-box">
+                    <h3>🎯 System Strengths</h3>
+                    <ul>
+                        <li><strong>Flexibility:</strong> Customize products precisely to customer preferences</li>
+                        <li><strong>Automation:</strong> Up to 60% of claims processes automated</li>
+                        <li><strong>Efficiency:</strong> 80% operational efficiency improvement</li>
+                        <li><strong>Cost Savings:</strong> Up to 65% operational cost reduction</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🔗 Module Connectivity Flow</h3>
+                    <p style="font-size: 1.1em; text-align: center; color: #4E56C0; font-weight: bold;">
+                        Product → Proposal → Policy → Member → Claim
+                    </p>
+                    <p>Data progresses sequentially through core modules with each stage building on the previous.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🔐 Role-Based Access Control (RBAC)</h3>
+                    <ul>
+                        <li>Strict hierarchical permissions</li>
+                        <li>Manager oversight without creation rights</li>
+                        <li>Sub-Team Managers cannot view upstream data</li>
+                        <li>Ensures data security and appropriate access levels</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 Improvement Opportunities</h3>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <h4>⚙️ Automation Enhancement</h4>
+                        <p>Review and optimize automated pricing recalculation and underwriting triggers for member movements.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>👆 UX Improvements</h4>
+                        <p>Streamline bulk actions interface (large uploads, complex team hierarchies) for better admin efficiency.</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>🔄 Process Optimization</h4>
+                        <p>Minimize friction at critical transition points, especially between Broker Portal sales and Admin Portal servicing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const mainNav = document.getElementById('main-nav');
-            const contentArea = document.getElementById('content-area');
-
-            if (!mainNav || !contentArea) {
-                console.error("Critical elements 'main-nav' or 'content-area' not found!");
-                return;
-            }
-
-            const navButtons = mainNav.querySelectorAll('.nav-button');
-            const moduleContents = contentArea.querySelectorAll('.module-content');
-            const sidebarNavs = contentArea.querySelectorAll('.sidebar-nav'); // NodeList of all ULs
-
-            if (!sidebarNavs || sidebarNavs.length === 0) {
-                 console.error("Could not find any '.sidebar-nav' elements within 'content-area'!");
-                 return;
-            }
-
-            const activeNavClass = ['bg-indigo-600', 'text-white', 'shadow-md'];
-            const inactiveNavClass = ['bg-white', 'text-gray-700', 'hover:bg-indigo-50', 'shadow-sm'];
-            const activeLinkClass = ['bg-indigo-100', 'text-indigo-700', 'font-semibold'];
-            const inactiveLinkClass = ['text-gray-700', 'hover:bg-gray-100'];
-
-
-            function showModule(moduleId) {
-                console.log(`Showing module: ${moduleId}`);
-                // Hide all module content areas first
-                moduleContents.forEach(module => {
-                    module.classList.add('hidden');
-                });
-
-                const activeModule = document.getElementById(`module-${moduleId}`);
-                if (activeModule) {
-                    activeModule.classList.remove('hidden');
-                } else {
-                    console.error(`Module content div 'module-${moduleId}' not found!`);
-                    return;
-                }
-
-                // Update main nav button styles
-                navButtons.forEach(button => {
-                     button.classList.remove(...activeNavClass, ...inactiveNavClass); // Remove all styles first
-                    if (button.dataset.module === moduleId) {
-                        button.classList.add(...activeNavClass);
-                    } else {
-                        button.classList.add(...inactiveNavClass);
-                    }
-                });
-
-                // Get the specific sidebar for *this* module
-                const moduleSidebar = activeModule.querySelector('.sidebar-nav');
-                if (!moduleSidebar) {
-                     console.error(`Sidebar .sidebar-nav not found within the now active module '${moduleId}'.`);
-                     return; // Cannot proceed without sidebar
-                }
-
-                // --- Reset all links in THIS sidebar to inactive ---
-                moduleSidebar.querySelectorAll('.sidebar-link').forEach(link => {
-                    link.classList.remove(...activeLinkClass);
-                    link.classList.add(...inactiveLinkClass);
-                });
-
-
-                // Find the first link in THIS sidebar
-                const firstSidebarLink = moduleSidebar.querySelector('.sidebar-link');
-                const section = activeModule.querySelector('section'); // Find the content section
-
-                // --- Hide all flow contents in THIS section ---
-                if (section) {
-                    section.querySelectorAll('div[id^="flow-"]').forEach(flow => {
-                        flow.classList.add('hidden');
-                    });
-                     // Remove placeholder if it exists from previous state
-                    const placeholder = section.querySelector('#temp-placeholder');
-                    if (placeholder) placeholder.remove();
-                } else {
-                     console.error(`Content section not found within module '${moduleId}' during module switch.`);
-                }
-
-
-                if (firstSidebarLink && firstSidebarLink.dataset.flow && section) {
-                     // --- Activate the first link and show its content ---
-                     firstSidebarLink.classList.remove(...inactiveLinkClass);
-                     firstSidebarLink.classList.add(...activeLinkClass);
-
-                     const firstFlowId = `flow-${firstSidebarLink.dataset.flow}`;
-                     const firstFlowContent = section.querySelector(`#${firstFlowId}`);
-                     if (firstFlowContent) {
-                         firstFlowContent.classList.remove('hidden');
-                     } else {
-                         console.error(`Content for first flow '${firstFlowId}' not found in module '${moduleId}'.`);
-                          section.insertAdjacentHTML('beforeend', '<p id="temp-placeholder" class="text-gray-500 italic">Select a flow from the sidebar.</p>'); // Add placeholder if first content fails
-                     }
-                } else {
-                    console.warn(`No sidebar links found or first link has no data-flow in module '${moduleId}' or section missing.`);
-                     if (section) {
-                         section.insertAdjacentHTML('beforeend', '<p id="temp-placeholder" class="text-gray-500 italic">Select a flow from the sidebar.</p>'); // Add placeholder
-                     }
-                }
-            }
-
-
-            function showFlow(moduleId, flowDataValue, clickedLinkElement) {
-                console.log(`Showing flow: Module='${moduleId}', FlowData='${flowDataValue}'`);
-
-                const moduleContainer = document.getElementById(`module-${moduleId}`);
-                if (!moduleContainer) {
-                    console.error(`showFlow ERROR: Module container 'module-${moduleId}' not found!`);
-                    return;
-                }
-                // Ensure the correct module container is visible
-                if (moduleContainer.classList.contains('hidden')) {
-                     console.warn(`showFlow called for hidden module '${moduleId}'. Making it visible.`);
-                     moduleContainer.classList.remove('hidden');
-                }
-
-                const section = moduleContainer.querySelector('section');
-                if (!section) {
-                    console.error(`showFlow ERROR: Content section not found within module '${moduleId}'`);
-                    return;
-                }
-
-                 // Remove placeholder if it exists
-                const placeholder = section.querySelector('#temp-placeholder');
-                if (placeholder) placeholder.remove();
-
-                // Hide all flow content DIVs within THIS module's section
-                const flowContentsInSection = section.querySelectorAll('div[id^="flow-"]');
-                flowContentsInSection.forEach(flow => {
-                    flow.classList.add('hidden');
-                });
-
-                // Construct and find the target flow content DIV within THIS section
-                const targetFlowId = `flow-${flowDataValue}`;
-                const activeFlow = section.querySelector(`#${targetFlowId}`);
-
-                // Show the target flow content DIV or display error
-                if (activeFlow) {
-                    activeFlow.classList.remove('hidden');
-                } else {
-                    console.error(`showFlow ERROR: Could not find flow content element with ID: ${targetFlowId} within module '${moduleId}'`);
-                    section.innerHTML = `<p class="text-red-500 font-semibold">Error: Content for flow ID '${targetFlowId}' not found.</p>`; // Keep error simple
-                }
-
-                // Update sidebar link styles within THIS module's sidebar ONLY
-                const sidebar = moduleContainer.querySelector('.sidebar-nav');
-                if (sidebar) {
-                    sidebar.querySelectorAll('.sidebar-link').forEach(link => {
-                        link.classList.remove(...activeLinkClass); // Remove active styles from ALL links in this sidebar
-                        link.classList.add(...inactiveLinkClass); // Ensure inactive styles are present
-                    });
-
-                    // Apply active styles ONLY to the clicked link
-                    if (clickedLinkElement) {
-                         clickedLinkElement.classList.remove(...inactiveLinkClass); // Remove inactive styles from clicked link
-                         clickedLinkElement.classList.add(...activeLinkClass); // Add active styles to clicked link
-                    } else {
-                        // This might occur if called without a specific link, e.g., on initial load
-                        console.warn("showFlow called without a specific clickedLinkElement to style.");
-                    }
-                } else {
-                    console.error(`Sidebar .sidebar-nav not found within module '${moduleId}' during style update.`);
-                }
-            }
-
-
-            // Attach event listener to main nav
-            mainNav.addEventListener('click', (e) => {
-                const targetButton = e.target.closest('.nav-button');
-                if (targetButton && targetButton.dataset.module) {
-                    showModule(targetButton.dataset.module);
-                }
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
             });
-
-
-            // Attach event listeners to all sidebars
-            sidebarNavs.forEach(sidebar => {
-                sidebar.addEventListener('click', (e) => {
-                    const clickedLink = e.target.closest('.sidebar-link');
-                    if (clickedLink) {
-                        const moduleId = sidebar.dataset.moduleId; // Get module from the UL clicked within
-                        const flowDataValue = clickedLink.dataset.flow;
-
-                        if (moduleId && flowDataValue) {
-                            showFlow(moduleId, flowDataValue, clickedLink);
-                        } else {
-                             console.error("Missing moduleId or flowDataValue on sidebar click.", { moduleId, flowDataValue });
-                        }
-                    }
-                });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
-
-            // Initial state - Show the default 'insured' module and its first flow.
-            // showModule handles showing the correct first flow internally.
-            showModule('insured');
-
-        });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
     </script>
-
 </body>
 </html>
-
