@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">💉</text></svg>') 4 4, auto;
         }
 
         body {
@@ -19,6 +20,14 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
+        }
+
+        body.scrolling * {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">🩺</text></svg>') 4 4, auto !important;
+        }
+
+        .tab-btn:hover, .card:hover, .embed-link:hover, .flow-step:hover, a:hover, button:hover {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">💊</text></svg>') 4 4, pointer !important;
         }
 
         body::before {
@@ -730,6 +739,16 @@
     </div>
 
     <script>
+        // Scroll detection for cursor change
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            document.body.classList.add('scrolling');
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function() {
+                document.body.classList.remove('scrolling');
+            }, 150);
+        });
+
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
